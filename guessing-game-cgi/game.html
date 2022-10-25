@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Угадай число</title>
+    <link rel="stylesheet" href="/index.css"/>
+</head>
+
+<body>
+<div class="game">
+    <h1>Игра "Угадай число"</h1>
+    Компьютер загадал число в диапазоне [{{.MinAnswer}}; {{.MaxAnswer}}]
+    <p>Попыток: <span>{{.NumAttempts}}</span></p>
+    <hr>
+    {{if .PrettyAttemptsLog | len | ne 0}}
+    <h2>Ваши предыдущие попытки</h2>
+    <ol id="attempts">{{.PrettyAttemptsLog}}</ol>
+    <hr>
+    {{end}}
+    <p>{{.Message}}</p>
+
+    <form method="post" class="controls">
+        <input type="hidden" name="gameData" value="{{.EncryptedInput}}"/>
+        <input type="number" name="answer" placeholder="Число, пожалуйста" autofocus {{if .GameOver}} disabled {{end}} />
+        <div class="buttons">
+            <button class="primary" type="submit" {{if .GameOver}} disabled {{end}}>Проверить</button>
+            <a href="/" class="primary">Заново</a>
+        </div>
+    </form>
+
+<!--    <script>-->
+<!--        document.querySelector('input[name="answer"]').focus();-->
+<!--    </script>-->
+</div>
+</body>
+
+</html>
