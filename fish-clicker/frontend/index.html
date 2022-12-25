@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish clicker</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div id="menu">
+        <div class="fish-wrapper">
+            <img src="images/fish.png">
+        </div>
+        <h1>Поймай рыбку</h1>
+        <input id="name" placeholder="Ваше имя" onkeydown="handleNameFieldChange(event)">
+        <button id="play" disabled onclick="handlePlayButtonClick()">Играть</button>
+    </div>
+
+    <div id="game" style="display: none;">
+        <div class="top-block">
+            <span id="score">Очки: 0</span>
+            <span class="sep">■</span>
+            <span id="time">00:00</span>
+            <button onclick="handlePauseButtonClick()">Пауза</button>
+        </div>
+        <div id="fishes">
+            <div id="click-score" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div id="pause" style="display: none;">
+        <span>Пауза</span>
+        <button onclick="handleResumeButtonClick()">Продолжить</button>
+    </div>
+
+    <div id="game-over" style="display: none;">
+        <span>Игра окончена</span>
+        <span id="final-score"></span>
+        <span id="scoreboard-loading">Загрузка таблицы рекордов...</span>
+        <span id="scoreboard-loading-failed" style="display: none;">Не удалось загрузить рекорды.</span>
+        <table id="scoreboard" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Очки</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+
+</html>

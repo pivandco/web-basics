@@ -1,0 +1,33 @@
+GET http://localhost:8080/high-scores
+
+###
+
+POST http://localhost:8080/high-scores
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "score": 100
+}
+
+###
+
+DELETE http://localhost:8080/high-scores
+Content-Type: application/json
+
+{
+    "password": "wrong"
+}
+
+###
+
+DELETE http://localhost:8080/high-scores
+Content-Type: application/json
+
+{
+    "password": "-[GhFa6Z)HgEnC*$:S2:Nq5)uz9ba]'8U^_/8kfdNmVkCPY4g{"
+}
+
+### 
+
+GET http://localhost:8080/smth
