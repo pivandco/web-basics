@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"runtime/debug"
 	"strings"
 
 	_ "embed"
@@ -48,6 +49,9 @@ func recoverPanic(w http.ResponseWriter) {
 		return
 	}
 
+	log.Printf("Panic: %s\n", r)
+	debug.PrintStack()
+
 	var msg string
 	switch x := r.(type) {
 	case string:
@@ -68,8 +72,22 @@ func recoverPanic(w http.ResponseWriter) {
 	w.Write(respBody)
 }
 
+const topHighScoresAmount = 10
+
 func handleGet(w http.ResponseWriter, r *http.Request) {
-	scoresJson, err := json.Marshal(getHighScores())
+	query := r.URL.Query()
+	playerNameToInclude := query.Get("myName")
+	highScores, err := getTopRatedHighScoresWithPlayerIncluded(topHighScoresAmount, playerNameToInclude)
+	if err != nil {
+		log.Panicf("error getting top rated high scores with player %s included: %s\n", playerNameToInclude, err)
+	}
+
+	topHighScores := make([]ratedHighScore, 0, topHighScoresAmount)
+	for i := 0; i < topHighScoresAmount && i < len(highScores); i++ {
+		topHighScores = append(topHighScores, highScores[i])
+	}
+
+	scoresJson, err := json.Marshal(topHighScores)
 	if err != nil {
 		log.Panicln("error marshaling high scores:", err)
 	}
@@ -84,7 +102,7 @@ func handlePost(w http.ResponseWriter, r *http.Request) {
 		handleBodyParseError(w, err)
 		return
 	}
-	createHighScore(hs)
+	recordHighScore(hs)
 	w.WriteHeader(http.StatusCreated)
 }
 

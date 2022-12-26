@@ -1,13 +1,13 @@
-GET http://localhost:8080/high-scores
+GET http://localhost/api/high-scores?myName=test
 
 ###
 
-POST http://localhost:8080/high-scores
+POST http://localhost/api/high-scores
 Content-Type: application/json
 
 {
-  "name": "John Doe",
-  "score": 100
+  "name": "JohnDoeLoser",
+  "score": 10
 }
 
 ###

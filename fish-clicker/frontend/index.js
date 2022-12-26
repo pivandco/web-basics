@@ -29,7 +29,9 @@ const ELEMENTS = Object.freeze({
   SCOREBOARD: document.querySelector("#scoreboard"),
   SCOREBOARD_TBODY: document.querySelector("#scoreboard tbody"),
   SCOREBOARD_LOADING: document.querySelector("#scoreboard-loading"),
-  SCOREBOARD_LOADING_FAILED: document.querySelector("#scoreboard-loading-failed"),
+  SCOREBOARD_LOADING_FAILED: document.querySelector(
+    "#scoreboard-loading-failed"
+  ),
   NAME_TEXT_FIELD: document.querySelector("input#name"),
   PLAY_BUTTON: document.querySelector("button#play"),
   SCORE: document.querySelector("#score"),
@@ -236,7 +238,11 @@ function setGameMode(newState) {
   gameMode = newState;
 
   function show(el) {
-    el.style.display = "flex";
+    if (el.id === "scoreboard") {
+      el.style.display = "";
+    } else {
+      el.style.display = "flex";
+    }
   }
   function hide(el) {
     el.style.display = "none";
@@ -263,17 +269,22 @@ function setGameMode(newState) {
     case GameMode.GameOver:
       show(ELEMENTS.GAME_OVER);
       show(ELEMENTS.SCOREBOARD_LOADING);
-      hide(ELEMENTS.SCOREBOARD_LOADING_FAILED)
+      hide(ELEMENTS.SCOREBOARD_LOADING_FAILED);
       hide(ELEMENTS.GAME);
       ELEMENTS.FINAL_SCORE.textContent = `Вы заработали ${gameState.score} очков`;
       destroyGameState();
-      fillScoreboard().then(() => {
-        show(ELEMENTS.SCOREBOARD);
-      }).catch(() => {
-        show(ELEMENTS.SCOREBOARD_LOADING_FAILED);
-      }).finally(() => {
-        hide(ELEMENTS.SCOREBOARD_LOADING);
-      })
+      sendHighScore()
+        .then(() => fillScoreboard())
+        .then(() => {
+          show(ELEMENTS.SCOREBOARD);
+        })
+        .catch((e) => {
+          console.error("Failed to load scoreboard", e);
+          show(ELEMENTS.SCOREBOARD_LOADING_FAILED);
+        })
+        .finally(() => {
+          hide(ELEMENTS.SCOREBOARD_LOADING);
+        });
       break;
   }
 }
@@ -302,21 +313,45 @@ function handleResumeButtonClick() {
 
 async function fillScoreboard() {
   const scores = await getScores();
-  const table = ELEMENTS.SCOREBOARD.querySelector("table");
+  const table = ELEMENTS.SCOREBOARD_TBODY;
   table.innerHTML = "";
   scores.forEach((score) => {
     const row = document.createElement("tr");
+    const ratingCell = document.createElement("td");
     const nameCell = document.createElement("td");
     const scoreCell = document.createElement("td");
+    ratingCell.textContent = score.rating;
     nameCell.textContent = score.name;
     scoreCell.textContent = score.score;
+    row.appendChild(ratingCell);
     row.appendChild(nameCell);
     row.appendChild(scoreCell);
+    if (score.name === playerName) {
+      row.classList.add('me');
+    }
     table.appendChild(row);
   });
 }
 
+async function sendHighScore() {
+  const response = await fetch("/api/high-scores", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: playerName,
+      score: gameState.score,
+    }),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to send high score");
+  }
+}
+
 async function getScores() {
-  const response = await fetch("/api/high-scores");
+  const response = await fetch(
+    "/api/high-scores?" + new URLSearchParams({ myName: playerName })
+  );
   return await response.json();
 }

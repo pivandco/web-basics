@@ -135,6 +135,10 @@ table {
   border-collapse: collapse;
 }
 
-table, td, th {
+td, th {
   border: 2px #03c2c2 solid;
+}
+
+tr.me {
+  color: #fcd576;
 }
