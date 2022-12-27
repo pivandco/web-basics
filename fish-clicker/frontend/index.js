@@ -64,6 +64,7 @@ function destroyGameState() {
 let playerName;
 
 const isTester = () => playerName.toLowerCase() === "tester";
+const isFishpocalypse = () => playerName.toLowerCase() === "fishpocalypse";
 
 let gameState;
 
@@ -102,6 +103,11 @@ function tickTime() {
   }
 
   drawTimeAndScore();
+  if (isFishpocalypse()) {
+    for (let i = 0; i < 100; i++) {
+      spawnFish();
+    }
+  }
   spawnFish();
 }
 
@@ -111,7 +117,7 @@ const FISH_SPEED = 0.002;
 const MAX_TARGET_CHANGE_TIME = 2000;
 class Fish {
   #size;
-  #targetChangesLeftUntilDeath = 4;
+  #targetChangesLeftUntilDeath = isFishpocalypse() ? Infinity : 4;
   #targetChangeTimeout;
   #target;
   #dying = false;
