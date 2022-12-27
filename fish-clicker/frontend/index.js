@@ -34,6 +34,7 @@ const ELEMENTS = Object.freeze({
   ),
   NAME_TEXT_FIELD: document.querySelector("input#name"),
   PLAY_BUTTON: document.querySelector("button#play"),
+  PLAYER_NAME: document.querySelector("#name-label"),
   SCORE: document.querySelector("#score"),
   TIME: document.querySelector("#time"),
   CLICK_SCORE: document.querySelector("#click-score"),
@@ -48,7 +49,7 @@ setInterval(() => {
 let gameMode = GameMode.Menu;
 
 const createGameState = () => ({
-  time: 5,
+  time: 60,
   timer: setInterval(tickTime, 1000),
   fishInterval: setInterval(tickFishes, 10),
   score: 0,
@@ -61,6 +62,9 @@ function destroyGameState() {
 }
 
 let playerName;
+
+const isTester = () => playerName.toLowerCase() === "tester";
+
 let gameState;
 
 function drawTimeAndScore() {
@@ -90,11 +94,14 @@ function tickTime() {
     return;
   }
 
-  gameState.time--;
-  drawTimeAndScore();
-  if (gameState.time <= 0) {
-    setGameMode(GameMode.GameOver);
+  if (!isTester()) {
+    gameState.time--;
+    if (gameState.time <= 0) {
+      setGameMode(GameMode.GameOver);
+    }
   }
+
+  drawTimeAndScore();
   spawnFish();
 }
 
@@ -258,6 +265,12 @@ function setGameMode(newState) {
       show(ELEMENTS.GAME);
       hide(ELEMENTS.MENU);
       hide(ELEMENTS.PAUSE);
+
+      ELEMENTS.PLAYER_NAME.textContent = playerName;
+      if (isTester()) {
+        ELEMENTS.PLAYER_NAME.classList.add("tester");
+      }
+
       if (prevMode !== GameMode.Paused) {
         gameState = createGameState();
       }
@@ -327,7 +340,7 @@ async function fillScoreboard() {
     row.appendChild(nameCell);
     row.appendChild(scoreCell);
     if (score.name === playerName) {
-      row.classList.add('me');
+      row.classList.add("me");
     }
     table.appendChild(row);
   });
