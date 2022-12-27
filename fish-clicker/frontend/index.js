@@ -309,11 +309,12 @@ function setGameMode(newState) {
 }
 
 function handleNameFieldChange(event) {
-  if (event.key === "Enter") {
-    handlePlayButtonClick();
-  }
   setTimeout(() => {
-    ELEMENTS.PLAY_BUTTON.disabled = ELEMENTS.NAME_TEXT_FIELD.value.length === 0;
+    const isNameValid = ELEMENTS.NAME_TEXT_FIELD.value.length !== 0;
+    if (event.key === "Enter" && isNameValid) {
+      handlePlayButtonClick();
+    }
+    ELEMENTS.PLAY_BUTTON.disabled = !isNameValid;
   });
 }
 
