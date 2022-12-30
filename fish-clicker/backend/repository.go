@@ -69,7 +69,7 @@ func getRatedHighScoreOfPlayer(playerName string) (*ratedHighScore, error) {
 	hs.Name = playerName
 
 	row := db.QueryRow("SELECT name, score, rating FROM (SELECT name, score, RANK() OVER (ORDER BY score DESC) rating FROM high_scores) WHERE name = ?", playerName)
-	err := row.Scan(&hs.Score, &hs.Rating)
+	err := row.Scan(&hs.Name, &hs.Score, &hs.Rating)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
